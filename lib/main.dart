@@ -1,4 +1,4 @@
-import 'package:carrot_market_sample/page/home.dart';
+import 'package:carrot_market_sample/page/app.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.white,
       ),
-      home: Home(),
+      home: App(),
     );
   }
 }

@@ -3,15 +3,12 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
-
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
   List<Map<String, String>> datas = [];
-  int _currentPageIndex = 0;
 
   @override
   void initState() {
@@ -100,6 +97,11 @@ class _HomeState extends State<Home> {
     ];
   }
 
+  final oCcy = new NumberFormat('#,###', 'ko_KR');
+  String calcStringToWon(String priceString) {
+    return '${oCcy.format(int.parse(priceString))} 원';
+  }
+
   PreferredSizeWidget _appbarWidget() {
     return AppBar(
       title: GestureDetector(
@@ -133,76 +135,75 @@ class _HomeState extends State<Home> {
     );
   }
 
-  final oCcy = new NumberFormat('#,###', 'ko_KR');
-  String calcStringToWon(String priceString) {
-    return '${oCcy.format(int.parse(priceString))} 원';
-  }
-
-  Widget _bodyWidget() {
-    return ListView.separated(
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: _appbarWidget(),
+      body: ListView.separated(
         padding: EdgeInsets.symmetric(horizontal: 10),
         itemBuilder: (BuildContext _context, int index) {
           return Container(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    child: Image.asset(
-                      datas[index]['image']!,
-                      width: 100,
-                      height: 100,
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  child: Image.asset(
+                    datas[index]['image']!,
+                    width: 100,
+                    height: 100,
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 100,
+                    padding: EdgeInsets.only(left: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          datas[index]['title']!,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 15),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          datas[index]['location']!,
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.black.withOpacity(0.4)),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(calcStringToWon(datas[index]['price']!),
+                            style: TextStyle(fontWeight: FontWeight.w500)),
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              SvgPicture.asset(
+                                'assets/svg/heart_off.svg',
+                                width: 13,
+                                height: 13,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 5.0),
+                                child: Text(datas[index]['likes']!),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Expanded(
-                    child: Container(
-                      height: 100,
-                      padding: EdgeInsets.only(left: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            datas[index]['title']!,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: 15),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                            datas[index]['location']!,
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black.withOpacity(0.4)),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(calcStringToWon(datas[index]['price']!),
-                              style: TextStyle(fontWeight: FontWeight.w500)),
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                SvgPicture.asset(
-                                  'assets/svg/heart_off.svg',
-                                  width: 13,
-                                  height: 13,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 5.0),
-                                  child: Text(datas[index]['likes']!),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                ],
-              ));
+                )
+              ],
+            ),
+          );
         }, //item을 만드는 위젯
         separatorBuilder: (BuildContext _context, int index) {
           return Container(
@@ -210,48 +211,8 @@ class _HomeState extends State<Home> {
             color: Colors.black.withOpacity(0.1),
           );
         }, //item을 만드는 위젯 , //item과 item 사이를 구성하는 위젯
-        itemCount: 10);
-  }
-
-  BottomNavigationBarItem _bottomNavigationBarItem(
-      String iconName, String label) {
-    return BottomNavigationBarItem(
-        label: label,
-        icon: Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: SvgPicture.asset(
-            'assets/svg/${iconName}_off.svg',
-            width: 22,
-          ),
-        ));
-  }
-
-  Widget _bottomNavigationBarWidget() {
-    return BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        onTap: (int index) {
-          setState(() {
-            _currentPageIndex = index;
-          });
-        },
-        currentIndex: _currentPageIndex,
-        selectedItemColor: Colors.black,
-        selectedFontSize: 12,
-        items: [
-          _bottomNavigationBarItem('home', '홈'),
-          _bottomNavigationBarItem('notes', '동네생활'),
-          _bottomNavigationBarItem('location', '내 근처'),
-          _bottomNavigationBarItem('chat', '채팅'),
-          _bottomNavigationBarItem('user', '나의 당근'),
-        ]);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _appbarWidget(),
-      body: _bodyWidget(),
-      bottomNavigationBar: _bottomNavigationBarWidget(),
+        itemCount: 10,
+      ),
     );
   }
 }
