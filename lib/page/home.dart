@@ -9,6 +9,12 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   List<Map<String, String>> datas = [];
+  String currentLocation = 'ara';
+  final Map<String, String> locationTypeToString = {
+    'ara': '아라동',
+    'ora': '오라동',
+    'donam': '도남동'
+  };
 
   @override
   void initState() {
@@ -108,11 +114,39 @@ class _HomeState extends State<Home> {
         onTap: () {
           print('click');
         },
-        child: Row(
-          children: [
-            Text('아라동'),
-            Icon(Icons.arrow_drop_down),
-          ],
+        child: PopupMenuButton<String>(
+          offset: Offset(0, 30),
+          shape: ShapeBorder.lerp(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              1),
+          onSelected: (String where) {
+            setState(() {
+              currentLocation = where;
+            });
+          },
+          itemBuilder: (context) {
+            return [
+              PopupMenuItem(
+                value: 'ara',
+                child: Text('아라동'),
+              ),
+              PopupMenuItem(
+                value: 'ora',
+                child: Text('오라동'),
+              ),
+              PopupMenuItem(
+                value: 'donam',
+                child: Text('도남동'),
+              ),
+            ];
+          },
+          child: Row(
+            children: [
+              Text(locationTypeToString[currentLocation]!),
+              Icon(Icons.arrow_drop_down),
+            ],
+          ),
         ),
       ),
       elevation: 1,
